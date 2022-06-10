@@ -11,37 +11,58 @@ const tipos ={
   nations:"Naciones",
   weapons:"Armas",
 
-}
+};
 
 function App() {
   const[genshinState,setGenshinState] = useState({
     types:[],
   });
 
-  const opciones = async() => {
-    const respuesta = await fetch("https://api.genshin.dev/");
-    const {types}=await respuesta.json();
-    setGenshinState({
-      types
-    }); 
-  };
+  const fetchGenshinApi = async(item,url="https://api.genshin.dev/") => {
+    const respuesta = await fetch(url);
+    const respJson =await respuesta.json();
+    if (item== "types"){
+      setGenshinState({
+        ...genshinState,
+          types: respJson.type
+        });
+      } else {
+  
+    
+      setGenshinState({
+        ...genshinState,
+        [item]: respJson,
+      });
+      }
+    };
+       fetchGenshinApi("types");
 
-  opciones();
+       const handleChangeType = ({target}) =>{
+         const url= 'https://api.genshin.dev/ ${target.value}';
+         fetchGenshinApi(target.value,url);
+         console.log(genshinState);
+       };
+    
+    
+  
+  
+
+  
 
   return (
     <div className="App">
       <h1>Genshin Impact Dex</h1>
       <hr />
-      <select>
+      <select name="types" onChange={handleChangeType}>
         <option value="">seleciona un elemento</option>
         {genshinState.type.map((type)=> (
-          <option rey={type} value ={type}>
+          <option key={type} value ={type}>
             {tipos[type]}
           </option>
         ))}
       </select>
     </div>
   );
-}
+  }
 
 export default App;
